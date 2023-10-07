@@ -21,6 +21,14 @@ public class Constraint {
         return target;
     }
 
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
     public List<MappingItem> getMapping() {
         return mapping;
     }

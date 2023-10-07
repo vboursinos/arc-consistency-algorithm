@@ -11,39 +11,58 @@ public class ModifiedArcConsistency {
         this.domains = domains;
     }
 
-    public void ac3() {
+    public void ac3_bidirectional() {
         Queue<Constraint> queue = new LinkedList<>(constraints);
 
         while (!queue.isEmpty()) {
             Constraint constraint = queue.poll();
-            if (revise(constraint)) {
-                if (domains.get(constraint.getSource()).getValues().isEmpty()) {
+
+            String source = constraint.getSource();
+            String target = constraint.getTarget();
+
+            if (revise(source, target, constraint)) {
+                if (domains.get(source).getValues().isEmpty()) {
                     return;  // Failure detected
                 }
 
-                // Add constraints involving both source and target nodes
+                // Only add constraints where source is target of current constraint
                 for (Constraint otherConstraint : constraints) {
-                    if (otherConstraint.getTarget().equals(constraint.getSource())
-                            || otherConstraint.getTarget().equals(constraint.getTarget())) {
+                    if (otherConstraint.getTarget().equals(source)) {
                         queue.add(otherConstraint);
                     }
+                }
+            }
+
+            // Now go in the opposite direction, target -> source
+            Constraint reversedConstraint = new Constraint(target, source, reverseMapping(constraint.getMapping()));
+            if (revise(target, source, reversedConstraint)) {
+                if (domains.get(target).getValues().isEmpty()) {
+                    return;  // Failure detected
                 }
             }
         }
     }
 
-    private boolean revise(Constraint constraint) {
-        boolean revised = false;
+    private List<MappingItem> reverseMapping(List<MappingItem> originalMapping) {
+        // Create a new list of MappingItems with the source and target swapped
+        List<MappingItem> reversedMapping = new ArrayList<>();
+        for (MappingItem item : originalMapping) {
+            MappingItem reversedItem = new MappingItem(item.getTarget(), item.getSource());
+            reversedMapping.add(reversedItem);
+        }
+        return reversedMapping;
+    }
 
-        Domain sourceDomain = domains.get(constraint.getSource());
+    private boolean revise(String source, String target, Constraint constraint) {
+        boolean revised = false;
+        Domain sourceDomain = domains.get(source);
         Set<Object> sourceValues = new HashSet<>(sourceDomain.getValues());
 
         for (Object sourceValue : sourceValues) {
             boolean satisfy = false;
-
             for (MappingItem mappingItem : constraint.getMapping()) {
-                if (mappingItem.getSource().contains(sourceValue)
-                        && !Collections.disjoint(mappingItem.getTarget(), domains.get(constraint.getTarget()).getValues())) {
+                if (mappingItem.getSource().contains(sourceValue) &&
+                        !Collections.disjoint(mappingItem.getTarget(), domains.get(target).getValues())) {
                     satisfy = true;
                     break;
                 }

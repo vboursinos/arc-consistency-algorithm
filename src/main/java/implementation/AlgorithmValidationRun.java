@@ -46,7 +46,7 @@ public class AlgorithmValidationRun {
         ModifiedArcConsistency ac = new ModifiedArcConsistency(constraints, domains);
         System.out.println("Before AC3: " + ac.getDomains());
 
-        ac.ac3();
+        ac.ac3_bidirectional();
 
         System.out.println("After AC3: " + ac.getDomains());
     }
