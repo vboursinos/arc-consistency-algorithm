@@ -5,8 +5,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ModifiedArcConsistencyTest {
 
@@ -65,7 +64,17 @@ public class ModifiedArcConsistencyTest {
         System.out.println("After AC3: " + ac.getDomains());
 
 
-         assertTrue(ac.getDomains().get("A").getValues().contains("gbdt"));
-         assertEquals(1, ac.getDomains().get("E").getValues().size());
+        assertTrue(ac.getDomains().get("A").getValues().contains("gbdt"));
+        assertEquals(1, ac.getDomains().get("A").getValues().size());
+        assertTrue(ac.getDomains().get("B").getValues().contains(13));
+        assertEquals(1, ac.getDomains().get("B").getValues().size());
+        assertTrue(ac.getDomains().get("C").getValues().contains(4));
+        assertFalse(ac.getDomains().get("C").getValues().contains(1));
+        assertEquals(2, ac.getDomains().get("C").getValues().size());
+        assertTrue(ac.getDomains().get("D").getValues().contains(true));
+        assertFalse(ac.getDomains().get("D").getValues().contains(false));
+        assertEquals(1, ac.getDomains().get("D").getValues().size());
+        assertTrue(ac.getDomains().get("E").getValues().contains("b"));
+        assertEquals(1, ac.getDomains().get("E").getValues().size());
     }
 }
